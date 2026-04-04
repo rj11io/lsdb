@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/rj11io/lsdb/compare/v1.0.1...v1.0.2) (2026-04-04)
+
+
+### Bug Fixes
+
+* debug ci ([8317416](https://github.com/rj11io/lsdb/commit/8317416c32a838410163b6551574a273be2eb4fb))
+
 ## [1.0.1](https://github.com/rj11io/lsdb/compare/v1.0.0...v1.0.1) (2026-04-04)
 
 
