@@ -1,5 +1,6 @@
 module.exports = {
   branches: ["main"],
+  repositoryUrl: "https://github.com/rj11io/lsdb.git",
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -22,6 +23,8 @@ module.exports = {
     [
       "@semantic-release/github",
       {
+        successComment: false,
+        failComment: false,
         assets: [
           { path: "dist/*.tgz", label: "npm package tarball" },
           { path: "CHANGELOG.md", label: "Changelog" },

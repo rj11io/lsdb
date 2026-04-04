@@ -35,6 +35,11 @@ jobs:
       - name: Verify package
         run: npm test
 
+      - name: Verify npm auth
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm whoami --registry=https://registry.npmjs.org/
+
       - name: Release to npm and GitHub Releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
