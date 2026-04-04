@@ -1,0 +1,2 @@
+# lsdb
+LocalStorage database service
