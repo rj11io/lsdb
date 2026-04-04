@@ -50,7 +50,15 @@ jobs:
 
       - name: Read package scope
         id: package
-        run: node -e "const fs=require('fs'); const pkg=require('./package.json'); const match=/^@([^/]+)\/(.+)$/.exec(pkg.name||''); if (!match) process.exit(0); fs.appendFileSync(process.env.GITHUB_OUTPUT, \`scope=${match[1]}\nname=${match[2]}\n\`);"
+        run: |
+          PACKAGE_NAME="$(node -p "require('./package.json').name || ''")"
+          case "$PACKAGE_NAME" in
+            @*/*)
+              PACKAGE_SCOPE="$(printf '%s' "${PACKAGE_NAME#@}" | cut -d/ -f1)"
+              echo "scope=$PACKAGE_SCOPE" >> "$GITHUB_OUTPUT"
+              echo "name=${PACKAGE_NAME#*/}" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
 
       - name: Configure GitHub Packages auth
         if: steps.package.outputs.scope != ''
@@ -63,7 +71,11 @@ jobs:
       - name: Resolve tarball path
         id: tarball
         if: steps.package.outputs.scope != ''
-        run: node -e "const fs=require('fs'); const path=require('path'); const dir='dist'; if (!fs.existsSync(dir)) process.exit(0); const tarball=fs.readdirSync(dir).find((file) => file.endsWith('.tgz')); if (!tarball) process.exit(0); fs.appendFileSync(process.env.GITHUB_OUTPUT, `path=./${path.posix.join(dir, tarball)}\n`);"
+        run: |
+          TARBALL_PATH="$(find dist -maxdepth 1 -name '*.tgz' | head -n 1)"
+          if [ -n "$TARBALL_PATH" ]; then
+            echo "path=./${TARBALL_PATH#./}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Publish tarball to GitHub Packages
         if: steps.tarball.outputs.path != ''
