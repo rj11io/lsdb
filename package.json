@@ -36,7 +36,8 @@
     "lint": "npm run build && node -e \"require('./dist/index.js')\"",
     "test": "npm run lint",
     "prepack": "npm run build",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "publish-public-local": "node ./.agents/skills/npm-publishing/scripts/publish-with-local-token.cjs"
   },
   "devDependencies": {
     "@semantic-release/changelog": "6.0.3",
