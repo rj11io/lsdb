@@ -2,6 +2,8 @@
 
 LocalStorage-backed key/value database service.
 
+Published package contents are limited to the `src` directory, LICENSE, and README.
+
 ## Install
 
 ```sh
