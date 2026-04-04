@@ -1,8 +1,8 @@
 # `@rj11io/lsdb`
 
-LocalStorage-backed key/value database service.
+LocalStorage-backed key/value database service with bundled TypeScript declarations.
 
-Published package contents are limited to the `src` directory, LICENSE, and README.
+Published package contents are limited to the built `dist` directory, LICENSE, and README.
 
 ## Install
 
