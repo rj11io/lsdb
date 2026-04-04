@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify package
+        run: npm test
+
+      - name: Release to npm and GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run semantic-release
+
+      - name: Read package scope
+        id: package
+        run: node -e "const fs=require('fs'); const pkg=require('./package.json'); const match=/^@([^/]+)\/(.+)$/.exec(pkg.name||''); if (!match) process.exit(0); fs.appendFileSync(process.env.GITHUB_OUTPUT, \`scope=${match[1]}\nname=${match[2]}\n\`);"
+
+      - name: Configure GitHub Packages auth
+        if: steps.package.outputs.scope != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@${{ steps.package.outputs.scope }}'
+
+      - name: Resolve tarball path
+        id: tarball
+        if: steps.package.outputs.scope != ''
+        run: node -e "const fs=require('fs'); const path=require('path'); const dir='dist'; if (!fs.existsSync(dir)) process.exit(0); const tarball=fs.readdirSync(dir).find((file) => file.endsWith('.tgz')); if (!tarball) process.exit(0); fs.appendFileSync(process.env.GITHUB_OUTPUT, `path=./${path.posix.join(dir, tarball)}\n`);"
+
+      - name: Publish tarball to GitHub Packages
+        if: steps.tarball.outputs.path != ''
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish ${{ steps.tarball.outputs.path }} --registry=https://npm.pkg.github.com
