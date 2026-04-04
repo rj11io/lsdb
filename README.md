@@ -1,6 +1,6 @@
 # `@rj11io/lsdb`
 
-LocalStorage-backed key/value database service with bundled TypeScript declarations.
+Async localStorage-backed collection store for browser apps.
 
 Published package contents are limited to the built `dist` directory, LICENSE, and README.
 
@@ -10,18 +10,42 @@ Published package contents are limited to the built `dist` directory, LICENSE, a
 npm install @rj11io/lsdb
 ```
 
-## Usage
+## Core Usage
 
-```js
-const { LSDB } = require("@rj11io/lsdb");
+```ts
+import { LSDBClient } from "@rj11io/lsdb";
 
-const db = new LSDB({ namespace: "app" });
+type Todo = {
+  id: string;
+  title: string;
+  done: boolean;
+};
 
-db.set("user", { id: 1, name: "Ada" });
-console.log(db.get("user"));
-console.log(db.has("user"));
-db.remove("user");
+const client = new LSDBClient({
+  namespace: "app",
+});
+
+const todos = client.collection<Todo>("todos");
+
+const created = await todos.insert({
+  title: "Review LSDB package",
+  done: false,
+});
+
+await todos.update(created.id, { done: true });
+const allTodos = await todos.all();
 ```
 
-When running outside the browser, pass a storage object that implements the Web Storage API methods:
-`getItem`, `setItem`, `removeItem`, `key`, and `length`.
+## API
+
+- `new LSDBClient(options)`: creates a client for one namespace.
+- `collection(name)`: gets a collection facade with `all`, `find`, `insert`, `update`, `delete`, `query`, and `subscribe`.
+- `MemoryStorage`: in-memory storage driver for tests or non-browser environments.
+- React bindings live in the companion package `@rj11io/lsdb-react`.
+
+## Notes
+
+- Data is stored per collection under keys shaped like `lsdb:<namespace>:<collection>`.
+- Collections recover from malformed stored JSON by falling back to an empty array.
+- `update()` preserves the original record `id` even if the patch includes its own `id`.
+- `subscribe()` fires for local writes and for `storage` events from other tabs when using `window.localStorage`.

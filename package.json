@@ -34,7 +34,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "npm run build && node -e \"require('./dist/index.js')\"",
-    "test": "npm run lint",
+    "test": "npm run lint && node --test tests/*.test.cjs",
     "prepack": "npm run build",
     "semantic-release": "semantic-release",
     "publish-public-local": "node ./.agents/skills/npm-publishing/scripts/publish-with-local-token.cjs"
