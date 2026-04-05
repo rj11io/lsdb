@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/rj11io/lsdb/compare/v1.0.2...v1.1.0) (2026-04-04)
+
+
+### Features
+
+* improve lsdb and add testing suite ([03be26c](https://github.com/rj11io/lsdb/commit/03be26cca612e56e55a9c59e6faf56b422e34c07))
+
 ## [1.0.2](https://github.com/rj11io/lsdb/compare/v1.0.1...v1.0.2) (2026-04-04)
 
 
