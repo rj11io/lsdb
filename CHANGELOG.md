@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/rj11io/lsdb/compare/v1.1.0...v1.1.1) (2026-08-17)
+
+
+### Bug Fixes
+
+* **lsdb:** defer browser storage resolution ([17ef59d](https://github.com/rj11io/lsdb/commit/17ef59d82375ab6b1569f69346b2a1754d5ce5c6))
+
 # [1.1.0](https://github.com/rj11io/lsdb/compare/v1.0.2...v1.1.0) (2026-04-04)
 
 
