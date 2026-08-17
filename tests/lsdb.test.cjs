@@ -10,6 +10,22 @@ function createClient(namespace) {
   });
 }
 
+test("defers default storage access until the first data operation", async () => {
+  const client = new LSDBClient({
+    namespace: "server-render",
+    delayMs: 0,
+  });
+  const todos = client.collection("todos");
+
+  const unsubscribe = todos.subscribe(() => {});
+  unsubscribe();
+
+  await assert.rejects(
+    todos.all(),
+    /No storage implementation available/
+  );
+});
+
 test("supports CRUD and query operations", async () => {
   const client = createClient("crud");
   const todos = client.collection("todos");

@@ -33,7 +33,7 @@ function defaultIdGenerator(): string {
 
 export class LSDBClient {
   private readonly namespace: string;
-  private readonly storage: StorageLike;
+  private storage?: StorageLike;
   private readonly delayMs: number;
   private readonly idGenerator: () => string;
   private readonly listeners = new Map<string, Set<LSDBListener>>();
@@ -41,7 +41,7 @@ export class LSDBClient {
 
   constructor(options: LSDBClientOptions = {}) {
     this.namespace = options.namespace ?? DEFAULT_NAMESPACE;
-    this.storage = options.storage ?? getDefaultStorage();
+    this.storage = options.storage;
     this.delayMs = options.delayMs ?? DEFAULT_DELAY_MS;
     this.idGenerator = options.idGenerator ?? defaultIdGenerator;
   }
@@ -143,12 +143,20 @@ export class LSDBClient {
     this.storageListenerAttached = false;
   }
 
+  private getStorage(): StorageLike {
+    if (!this.storage) {
+      this.storage = getDefaultStorage();
+    }
+
+    return this.storage;
+  }
+
   private readCollection<T extends LSDBEntity>(collectionName: string): T[] {
-    return readCollection<T>(this.storage, this.namespace, collectionName);
+    return readCollection<T>(this.getStorage(), this.namespace, collectionName);
   }
 
   private writeCollection<T extends LSDBEntity>(collectionName: string, data: T[]): void {
-    writeCollection(this.storage, this.namespace, collectionName, data);
+    writeCollection(this.getStorage(), this.namespace, collectionName, data);
     this.notify(collectionName);
   }
 
@@ -170,9 +178,13 @@ export class LSDBClient {
 
     if (
       typeof globalThis.addEventListener !== "function" ||
-      typeof globalThis.localStorage === "undefined" ||
-      this.storage !== globalThis.localStorage
+      typeof globalThis.localStorage === "undefined"
     ) {
+      return;
+    }
+
+    const storage = this.getStorage();
+    if (storage !== globalThis.localStorage) {
       return;
     }
 

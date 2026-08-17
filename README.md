@@ -46,6 +46,7 @@ const allTodos = await todos.all();
 ## Notes
 
 - Data is stored per collection under keys shaped like `lsdb:<namespace>:<collection>`.
+- Constructing a client does not access browser storage, so it is safe during server rendering. The first data operation resolves `localStorage`; pass an explicit `storage` outside a browser.
 - Collections recover from malformed stored JSON by falling back to an empty array.
 - `update()` preserves the original record `id` even if the patch includes its own `id`.
 - `subscribe()` fires for local writes and for `storage` events from other tabs when using `window.localStorage`.
