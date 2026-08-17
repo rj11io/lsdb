@@ -50,3 +50,5 @@ const allTodos = await todos.all();
 - Collections recover from malformed stored JSON by falling back to an empty array.
 - `update()` preserves the original record `id` even if the patch includes its own `id`.
 - `subscribe()` fires for local writes and for `storage` events from other tabs when using `window.localStorage`.
+
+.
